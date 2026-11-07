@@ -1,15 +1,15 @@
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { MetadataPage } from '@/forms/MetadataPage'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { mainRoute } from './MainShell'
+import { mainPageRoutes } from './routes'
 import './app.css'
 
 const queryClient = new QueryClient()
-
-// The server embeds the page settings as JSON in the Razor shell (Views/Shared/ReactDocument.cshtml).
-const settings = JSON.parse(document.getElementById('react-config')!.textContent!) as { configurationUrl: string }
+const router = createRouter({ routeTree: mainRoute.addChildren(mainPageRoutes) })
 
 createRoot(document.getElementById('root')!).render(
   <QueryClientProvider client={queryClient}>
-    <MetadataPage configurationUrl={settings.configurationUrl} />
+    <RouterProvider router={router} />
   </QueryClientProvider>,
 )

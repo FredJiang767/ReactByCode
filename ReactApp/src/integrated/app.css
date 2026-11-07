@@ -7,4 +7,6 @@ table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eceef2; }
 th { background: #fafbfc; font-weight: 600; }
 tbody tr:hover { background: #f7f9fc; }
-.num { text-align: right; }
+.num { text-align: right; }.nav { display: flex; gap: 16px; padding: 12px 24px; background: #1f2430; }
+.nav a { color: #c9cfdb; text-decoration: none; }
+.nav a.active { color: #fff; font-weight: 600; }

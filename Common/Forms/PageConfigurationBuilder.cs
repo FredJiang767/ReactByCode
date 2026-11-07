@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Routing;
 namespace ReactByCode.Common.Forms;
 
 // One section of a page: a table plus the controller action that supplies its rows.
@@ -36,6 +35,7 @@ public sealed class PageConfigurationBuilder
     {
         if (configuration.Definitions.Count == 0)
             throw new InvalidOperationException("LoadFrom requires a preceding Section.");
+
         if (action.Body is not MethodCallExpression call)
             throw new InvalidOperationException("LoadFrom requires a controller method call.");
 

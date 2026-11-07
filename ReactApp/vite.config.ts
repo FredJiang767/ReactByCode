@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from 'node:url'
+﻿import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -15,7 +15,7 @@ export default defineConfig({
     strictPort: true,
     cors: true,
     hmr: { path: '/__vite_hmr' },
-    proxy: { '^/(api|Customers)': { target: backend, changeOrigin: true } },
+    proxy: { '^/(api|Customers|Orders)': { target: backend, changeOrigin: true } },
   },
   build: {
     manifest: true,
