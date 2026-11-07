@@ -1,0 +1,10 @@
+body { margin: 0; font-family: system-ui, sans-serif; background: #f5f6f8; color: #1f2430; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 1.6rem; margin: 0 0 16px; }
+.card { background: #fff; border: 1px solid #e0e3e8; border-radius: 8px; padding: 16px; }
+.card h2 { font-size: 1.1rem; margin: 0 0 12px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eceef2; }
+th { background: #fafbfc; font-weight: 600; }
+tbody tr:hover { background: #f7f9fc; }
+.num { text-align: right; }

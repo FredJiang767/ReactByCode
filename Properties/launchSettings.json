@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ReactByCode": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:12092/Customers",
+      "applicationUrl": "http://localhost:12092",
+      "environmentVariables": { "ASPNETCORE_ENVIRONMENT": "Development" }
+    }
+  }
+}

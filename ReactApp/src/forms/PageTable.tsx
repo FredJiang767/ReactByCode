@@ -1,0 +1,38 @@
+import { useQuery } from '@tanstack/react-query'
+import type { PageSection, TableData } from './PageConfiguration'
+import { formatCell } from './format'
+
+async function getJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { headers: { Accept: 'application/json' } })
+  if (!response.ok) throw new Error('Request failed: ' + response.status)
+  return response.json() as Promise<T>
+}
+
+export function PageTable({ section }: { section: PageSection }) {
+  const { table } = section
+  const query = useQuery({ queryKey: ['table', section.key], queryFn: () => getJson<TableData>(section.source) })
+  const items = query.data?.items ?? []
+
+  return (
+    <section className="card">
+      <h2>{table.title}</h2>
+      {query.isLoading && <p role="status">Loading...</p>}
+      {query.isError && <p role="alert">{query.error.message}</p>}
+      {query.isSuccess && items.length === 0 && <p>{table.emptyMessage}</p>}
+      {items.length > 0 && (
+        <table>
+          <thead>
+            <tr>{table.columns.map((c) => <th key={c.key} className={c.format === 'currency' ? 'num' : undefined}>{c.title}</th>)}</tr>
+          </thead>
+          <tbody>
+            {items.map((row) => (
+              <tr key={String(row[table.rowKey])}>
+                {table.columns.map((c) => <td key={c.key} className={c.format === 'currency' ? 'num' : undefined}>{formatCell(row[c.key], c.format)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  )
+}

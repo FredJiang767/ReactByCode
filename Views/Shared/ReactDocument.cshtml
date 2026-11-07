@@ -1,0 +1,32 @@
+@model ReactByCode.Hosting.ReactDocument
+@{
+    Layout = null;
+}
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ReactByCode</title>
+    @foreach (string style in Model.Styles)
+    {
+        <link rel="stylesheet" href="@style">
+    }
+    @if (Model.ViteBasePath != null)
+    {
+        <script type="module" src="@(Model.ViteBasePath + "/@vite/client")"></script>
+        <script type="module">
+            import RefreshRuntime from @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ViteBasePath + "/@react-refresh"));
+            RefreshRuntime.injectIntoGlobalHook(window);
+            window.$RefreshReg$ = () => {};
+            window.$RefreshSig$ = () => type => type;
+            window.__vite_plugin_react_preamble_installed__ = true;
+        </script>
+    }
+</head>
+<body>
+    <div id="root"></div>
+    <script id="react-config" type="application/json">@Html.Raw(Model.ConfigurationJson)</script>
+    <script type="module" src="@Model.ScriptUrl"></script>
+</body>
+</html>

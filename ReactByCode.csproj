@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ReactApp/**" />
+    <Content Remove="ReactApp/**" />
+    <None Remove="ReactApp/**" />
+    <Content Include="ReactApp/dist/**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="EnsureReact" BeforeTargets="BeforeBuild" Condition="'$(Configuration)' == 'Debug' and !Exists('$(MSBuildProjectDirectory)/ReactApp/dist/.vite/manifest.json')">
+    <Exec Command="npm ci" WorkingDirectory="$(MSBuildProjectDirectory)/ReactApp" Condition="!Exists('$(MSBuildProjectDirectory)/ReactApp/node_modules')" />
+    <Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)/ReactApp" />
+  </Target>
+</Project>
