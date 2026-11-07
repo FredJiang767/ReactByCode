@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { PageConfiguration } from './PageConfiguration'
 import { PageTable } from './PageTable'
 
+// Loads the page definition from the server and renders each of its sections.
 export function MetadataPage({ configurationUrl }: { configurationUrl: string }) {
   const query = useQuery({
     queryKey: ['page', configurationUrl],
@@ -15,7 +16,6 @@ export function MetadataPage({ configurationUrl }: { configurationUrl: string })
   if (query.isError) return <p role="alert">{query.error.message}</p>
   return (
     <main>
-      <h1>{query.data!.title}</h1>
       {query.data!.sections.map((section) => <PageTable key={section.key} section={section} />)}
     </main>
   )

@@ -1,3 +1,3 @@
 using ReactByCode.Hosting;
-var app = AppHost.Create(args);
+var app = CoreHost.Create(args);
 app.Run();

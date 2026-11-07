@@ -1,6 +1,7 @@
 using ReactByCode.Common.Forms;
 namespace ReactByCode.Common.ViewModels.Customer;
 
+// Declares the customer table columns.
 public sealed class CustomerTable : ITable<CustomerRow>
 {
     public static TableBuilder<CustomerRow> DefineTable()

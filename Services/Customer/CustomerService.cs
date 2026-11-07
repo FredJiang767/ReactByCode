@@ -1,7 +1,8 @@
 using ReactByCode.Common.ViewModels.Customer;
 namespace ReactByCode.Services.Customer;
 
-public sealed class MockCustomerService : ICustomerService
+// Returns generated mock customers. Replace the body with a real data source later.
+public sealed class CustomerService : ICustomerService
 {
     private static readonly string[] Names = ["Alice Johnson", "Bob Smith", "Carol Williams", "David Brown", "Emma Davis", "Frank Miller", "Grace Wilson", "Henry Moore", "Ivy Taylor", "Jack Anderson"];
     private static readonly string[] States = ["UT", "NJ", "WA", "CO", "AZ"];

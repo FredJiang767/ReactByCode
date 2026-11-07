@@ -1,25 +1,49 @@
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Routing;
 namespace ReactByCode.Common.Forms;
 
-public sealed class PageConfigurationBuilder(string title)
+// One section of a page: a table plus the controller action that supplies its rows.
+internal sealed class PageSectionDefinition(string key, TableMetadata table)
 {
-    private readonly List<PageSection> sections = [];
+    public string Key { get; } = key;
+    public string? Controller { get; set; }
+    public string? Action { get; set; }
 
-    public PageConfigurationBuilder Section<TRow, TTable>(string key, string source) where TTable : ITable<TRow>
+    public PageSectionMetadata Resolve(LinkGenerator links, HttpContext context)
     {
-        if (sections.Any(s => s.Key == key)) throw new InvalidOperationException("Duplicate section key: " + key);
-        sections.Add(new PageSection { Key = key, Table = TTable.DefineTable().Build(), Source = source });
-        return this;
-    }
+        if (Controller == null || Action == null)
+            throw new InvalidOperationException("The Section needs a data source: " + Key);
 
-    public PageConfiguration Build()
-    {
-        if (sections.Count == 0) throw new InvalidOperationException("A page requires at least one section.");
-        return new PageConfiguration { Title = title, Sections = sections };
+        string source = links.GetPathByAction(context, Action, Controller)
+            ?? throw new InvalidOperationException("The Section data route is missing: " + Key);
+        return new PageSectionMetadata { Key = Key, Table = table, Source = source };
     }
 }
 
-public static class Page
+public sealed class PageConfigurationBuilder
 {
-    public static PageConfiguration Configure(string title, Func<PageConfigurationBuilder, PageConfigurationBuilder> define)
-        => define(new PageConfigurationBuilder(title)).Build();
+    private readonly PageConfiguration configuration = new();
+
+    // Adds a table section. Follow it with LoadFrom to say where the rows come from.
+    public PageConfigurationBuilder Section<TRow>(string key, TableBuilder<TRow> table)
+    {
+        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build()));
+        return this;
+    }
+
+    // Binds the last section to a controller action, e.g. LoadFrom<CustomerController>(c => c.List()).
+    public PageConfigurationBuilder LoadFrom<TController>(Expression<Func<TController, object?>> action)
+    {
+        if (configuration.Definitions.Count == 0)
+            throw new InvalidOperationException("LoadFrom requires a preceding Section.");
+        if (action.Body is not MethodCallExpression call)
+            throw new InvalidOperationException("LoadFrom requires a controller method call.");
+
+        PageSectionDefinition section = configuration.Definitions[^1];
+        section.Controller = typeof(TController).Name.Replace("Controller", "");
+        section.Action = call.Method.Name;
+        return this;
+    }
+
+    internal PageConfiguration Build() => configuration;
 }

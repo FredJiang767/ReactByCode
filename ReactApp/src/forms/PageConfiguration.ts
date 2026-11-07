@@ -1,3 +1,4 @@
+// Mirrors the JSON produced by the server's PageMetadata (see Common/Forms/PageConfiguration.cs).
 export interface TableColumn {
   key: string
   title: string
@@ -20,7 +21,6 @@ export interface PageSection {
 
 export interface PageConfiguration {
   schemaVersion: number
-  title: string
   sections: PageSection[]
 }
 

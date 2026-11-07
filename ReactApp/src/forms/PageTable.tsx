@@ -8,6 +8,7 @@ async function getJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>
 }
 
+// Renders one table section: columns come from the server definition, rows from its source URL.
 export function PageTable({ section }: { section: PageSection }) {
   const { table } = section
   const query = useQuery({ queryKey: ['table', section.key], queryFn: () => getJson<TableData>(section.source) })

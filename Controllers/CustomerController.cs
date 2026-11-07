@@ -5,16 +5,20 @@ using ReactByCode.Hosting;
 using ReactByCode.Services.Customer;
 namespace ReactByCode.Controllers;
 
-public sealed class CustomerController(ICustomerService service, ReactDocumentRenderer renderer) : Controller
+[Route("api/react/customers/[action]")]
+public sealed class CustomerController(ICustomerService service) : PageController
 {
-    [HttpGet("/Customers")]
-    public async Task<IActionResult> Page()
-        => View("~/Views/Shared/ReactDocument.cshtml", await renderer.CreateAsync(HttpContext, Url.Action(nameof(Configuration))!));
+    public const string PageUrl = "/Customers";
 
-    [HttpGet("api/react/customers/configuration")]
-    public ActionResult<PageConfiguration> Configuration()
-        => CustomerPage.Configure(Url.Action(nameof(Customers))!);
+    // The browser page: returns the React shell.
+    [ReactDocument, HttpGet(PageUrl)]
+    public Task<IActionResult> ListPage() => RenderPage(nameof(ListConfiguration));
 
-    [HttpGet("api/react/customers/customers")]
-    public TableData<CustomerRow> Customers() => new() { Items = service.GetAll() };
+    // The page definition (sections, columns, data URLs).
+    [HttpGet]
+    public ActionResult<PageMetadata> ListConfiguration() => Resolve(CustomerPage.Configure());
+
+    // The table rows.
+    [HttpGet]
+    public TableData<CustomerRow> List() => new() { Items = service.GetAll() };
 }

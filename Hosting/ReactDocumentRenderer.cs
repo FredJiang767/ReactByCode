@@ -1,9 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace ReactByCode.Hosting;
 
 public sealed record ReactDocument(string ConfigurationJson, string ScriptUrl, string[] Styles, string? ViteBasePath);
 
-public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, AppOptions options)
+// Builds the data the Razor shell needs: the page settings JSON and the URLs of the React entry script and styles.
+public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, MigrationOptions options)
 {
     private const string Entry = "src/integrated/main.tsx";
 
@@ -11,19 +13,24 @@ public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, AppOp
     {
         context.Response.Headers.CacheControl = "no-store";
         string configuration = JsonSerializer.Serialize(new { configurationUrl });
+
+        // Development: load modules straight from the Vite dev server.
         if (options.ViteUrl != null)
         {
             string vite = options.ViteUrl.GetLeftPart(UriPartial.Authority);
             return Task.FromResult(new ReactDocument(configuration, vite + "/" + Entry, [], vite));
         }
+
+        // Production: resolve hashed asset file names from the Vite manifest.
         string path = Path.Combine(environment.ContentRootPath, "ReactApp", "dist", ".vite", "manifest.json");
         var manifest = JsonSerializer.Deserialize<Dictionary<string, ManifestEntry>>(File.ReadAllText(path))
             ?? throw new InvalidOperationException("The React manifest is missing.");
         var styles = new HashSet<string>();
         AddStyles(manifest, Entry, styles, []);
-        return Task.FromResult(new ReactDocument(configuration, AssetUrl(manifest[Entry].file), styles.Select(AssetUrl).ToArray(), null));
+        return Task.FromResult(new ReactDocument(configuration, AssetUrl(manifest[Entry].File), styles.Select(AssetUrl).ToArray(), null));
     }
 
+    // Rejects manifest paths that could escape the assets folder.
     private static string AssetUrl(string file)
     {
         if (file.Contains("..") || file.Contains('\\') || file.Contains(':') || file.StartsWith('/'))
@@ -31,6 +38,7 @@ public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, AppOp
         return "/ReactApp/dist/" + file;
     }
 
+    // Collects the CSS of an entry and of every chunk it imports.
     private static void AddStyles(Dictionary<string, ManifestEntry> manifest, string entry, HashSet<string> styles, HashSet<string> visited)
     {
         if (!visited.Add(entry)) return;
@@ -41,8 +49,8 @@ public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, AppOp
 
     private sealed class ManifestEntry
     {
-        [System.Text.Json.Serialization.JsonPropertyName("file")] public string file { get; set; } = "";
-        [System.Text.Json.Serialization.JsonPropertyName("css")] public string[]? Css { get; set; }
-        [System.Text.Json.Serialization.JsonPropertyName("imports")] public string[]? Imports { get; set; }
+        [JsonPropertyName("file")] public string File { get; set; } = "";
+        [JsonPropertyName("css")] public string[]? Css { get; set; }
+        [JsonPropertyName("imports")] public string[]? Imports { get; set; }
     }
 }
