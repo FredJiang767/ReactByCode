@@ -1,15 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import type { PageConfiguration, PageSection } from './PageConfiguration'
 import { getJson } from '@/api/request'
+import { DetailForm } from './DetailForm'
 import { PageTable } from './PageTable'
 import { SearchSection } from './SearchSection'
 
-// Picks the component for a section by its declared type.
 function Section({ section }: { section: PageSection }) {
-  return section.type === 'search' ? <SearchSection section={section} /> : <PageTable section={section} />
+  if (section.type === 'form') return <DetailForm section={section} />
+  if (section.type === 'search') return <SearchSection section={section} />
+  return <PageTable section={section} />
 }
 
-// Loads the page definition from the server and renders each of its sections.
 export function MetadataPage({ configurationUrl }: { configurationUrl: string }) {
   const query = useQuery({
     queryKey: ['page', configurationUrl],

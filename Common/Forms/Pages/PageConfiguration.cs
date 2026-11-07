@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Routing;
 namespace ReactByCode.Common.Forms;
 
-// A page declared in code. Resolve turns it into the metadata the browser renders.
 public sealed class PageConfiguration
 {
     internal List<PageSectionDefinition> Definitions { get; } = [];

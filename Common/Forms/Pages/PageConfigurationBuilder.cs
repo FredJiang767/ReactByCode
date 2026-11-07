@@ -5,34 +5,55 @@ public sealed class PageConfigurationBuilder
 {
     private readonly PageConfiguration configuration = new();
 
-    // Adds a table section. Follow it with LoadFrom to say where the rows come from.
     public PageConfigurationBuilder Section<TRow>(string key, TableBuilder<TRow> table)
     {
-        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), null));
+        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), null, null));
         return this;
     }
 
-    // Adds a search section: a criteria form above a result table. The endpoint receives the criteria as query string values.
     public PageConfigurationBuilder SearchSection<TCriteria, TRow>(string key, CriteriaBuilder<TCriteria> criteria, TableBuilder<TRow> table)
     {
-        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), criteria.Build()));
+        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), criteria.Build(), null));
         return this;
     }
 
-    // Binds the last section to a controller action, e.g. LoadFrom<CustomerController>(c => c.List()).
-    // Arguments of the call are ignored; only the action name is used.
+    public PageConfigurationBuilder FormSection<TForm>(string key, FormBuilder<TForm> form)
+    {
+        configuration.Definitions.Add(new PageSectionDefinition(key, new TableMetadata(), null, form.Build()));
+        return this;
+    }
+
     public PageConfigurationBuilder LoadFrom<TController>(Expression<Func<TController, object?>> action)
     {
-        if (configuration.Definitions.Count == 0)
-            throw new InvalidOperationException("LoadFrom requires a preceding Section.");
-        if (action.Body is not MethodCallExpression call)
-            throw new InvalidOperationException("LoadFrom requires a controller method call.");
+        PageSectionDefinition section = LastSection();
+        section.Controller = ControllerName<TController>();
+        section.Action = ActionName(action);
+        return this;
+    }
 
-        PageSectionDefinition section = configuration.Definitions[^1];
-        section.Controller = typeof(TController).Name.Replace("Controller", "");
-        section.Action = call.Method.Name;
+    public PageConfigurationBuilder SaveTo<TController>(Expression<Func<TController, object?>> action)
+    {
+        LastSection().SaveAction = ActionName(action);
         return this;
     }
 
     internal PageConfiguration Build() => configuration;
+
+    private PageSectionDefinition LastSection()
+    {
+        if (configuration.Definitions.Count == 0)
+            throw new InvalidOperationException("The call requires a preceding Section.");
+
+        return configuration.Definitions[^1];
+    }
+
+    private static string ControllerName<TController>() => typeof(TController).Name.Replace("Controller", "");
+
+    private static string ActionName<TController>(Expression<Func<TController, object?>> action)
+    {
+        if (action.Body is not MethodCallExpression call)
+            throw new InvalidOperationException("The call requires a controller method call.");
+
+        return call.Method.Name;
+    }
 }

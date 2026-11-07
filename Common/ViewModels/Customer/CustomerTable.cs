@@ -1,7 +1,6 @@
 using ReactByCode.Common.Forms;
 namespace ReactByCode.Common.ViewModels.Customer;
 
-// Declares the customer table columns.
 public sealed class CustomerTable : ITable<CustomerRow>
 {
     public static TableBuilder<CustomerRow> DefineTable()
@@ -9,8 +8,9 @@ public sealed class CustomerTable : ITable<CustomerRow>
             .RowKey(row => row.CustomerID)
             .Title("Customers")
             .EmptyMessage("No customers found.")
+            .HeaderLink("Add Customer", "/Customers/Detail")
             .Column(row => row.CustomerID, "ID")
-            .Column(row => row.Name, "Name")
+            .Link(row => row.Name, "Name", "/Customers/Detail?id={customerID}")
             .Column(row => row.Email, "Email")
             .Column(row => row.CreatedDate, "Created", ColumnFormat.Date);
 }

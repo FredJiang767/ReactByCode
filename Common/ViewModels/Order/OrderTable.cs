@@ -1,7 +1,6 @@
 using ReactByCode.Common.Forms;
 namespace ReactByCode.Common.ViewModels.Order;
 
-// Declares the order table columns.
 public sealed class OrderTable : ITable<OrderRow>
 {
     public static TableBuilder<OrderRow> DefineTable()

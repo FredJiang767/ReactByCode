@@ -1,10 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
-import type { CriteriaValues, PageSection, TableData } from './PageConfiguration'
+import type { CriteriaValues, PageSection, TableColumn, TableData } from './PageConfiguration'
 import { getJson } from '@/api/request'
 import { formatCell } from './format'
 
-// Renders one table section: columns come from the server definition, rows from its source URL.
-// params are sent as query string values (the search criteria of a search section).
+type Row = Record<string, unknown>
+
+function rowHref(template: string, row: Row) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => encodeURIComponent(String(row[key] ?? '')))
+}
+
+function Cell({ column, row }: { column: TableColumn; row: Row }) {
+  const text = formatCell(row[column.key], column.format)
+  return (
+    <td className={column.format === 'currency' ? 'num' : undefined}>
+      {column.format === 'link' && column.href ? <a href={rowHref(column.href, row)}>{text}</a> : text}
+    </td>
+  )
+}
+
 export function PageTable({ section, params = {} }: { section: PageSection; params?: CriteriaValues }) {
   const { table } = section
   const query = useQuery({
@@ -18,7 +31,10 @@ export function PageTable({ section, params = {} }: { section: PageSection; para
 
   return (
     <section className="card">
-      <h2>{table.title}</h2>
+      <div className="card-header">
+        <h2>{table.title}</h2>
+        {table.headerLinks.map((link) => <a key={link.href} className="button" href={link.href}>{link.label}</a>)}
+      </div>
       {query.isLoading && <p role="status">Loading...</p>}
       {query.isError && <p role="alert">{query.error.message}</p>}
       {query.isSuccess && items.length === 0 && <p>{table.emptyMessage}</p>}
@@ -30,7 +46,7 @@ export function PageTable({ section, params = {} }: { section: PageSection; para
           <tbody>
             {items.map((row) => (
               <tr key={String(row[table.rowKey])}>
-                {table.columns.map((c) => <td key={c.key} className={c.format === 'currency' ? 'num' : undefined}>{formatCell(row[c.key], c.format)}</td>)}
+                {table.columns.map((c) => <Cell key={c.key} column={c} row={row} />)}
               </tr>
             ))}
           </tbody>

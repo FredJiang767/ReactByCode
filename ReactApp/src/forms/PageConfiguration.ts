@@ -1,8 +1,13 @@
-// Mirrors the JSON produced by the server's PageMetadata (see Common/Forms/PageConfiguration.cs).
 export interface TableColumn {
   key: string
   title: string
-  format: 'none' | 'date' | 'datetime' | 'currency'
+  format: 'none' | 'date' | 'datetime' | 'currency' | 'link'
+  href: string | null
+}
+
+export interface HeaderLink {
+  label: string
+  href: string
 }
 
 export interface TableMetadata {
@@ -10,6 +15,7 @@ export interface TableMetadata {
   rowKey: string
   emptyMessage: string
   columns: TableColumn[]
+  headerLinks: HeaderLink[]
 }
 
 export interface CriteriaOption {
@@ -30,12 +36,32 @@ export interface CriteriaMetadata {
 
 export type CriteriaValues = Record<string, string>
 
+export interface FormField {
+  key: string
+  label: string
+  type: 'text'
+  required: boolean
+}
+
+export interface FormMetadata {
+  fields: FormField[]
+}
+
+export type FormValues = Record<string, string | number | null>
+
+export interface SaveResult {
+  id: number | null
+  errors: Record<string, string>
+}
+
 export interface PageSection {
   key: string
-  type: 'table' | 'search'
+  type: 'table' | 'search' | 'form'
   criteria: CriteriaMetadata | null
+  form: FormMetadata | null
   table: TableMetadata
   source: string
+  saveSource: string | null
 }
 
 export interface PageConfiguration {
