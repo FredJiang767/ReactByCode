@@ -1,7 +1,6 @@
 using ReactByCode.Common.Forms;
 namespace ReactByCode.Common.ViewModels.Order;
 
-// The order search form. Each property is also a query string parameter of OrderController.Search.
 public sealed class OrderSearchCriteria : ISearchCriteria<OrderSearchCriteria>
 {
     public string? CustomerName { get; set; }

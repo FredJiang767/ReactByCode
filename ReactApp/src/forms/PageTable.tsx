@@ -1,12 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import type { CriteriaValues, PageSection, TableData } from './PageConfiguration'
+import { getJson } from '@/api/request'
 import { formatCell } from './format'
-
-async function getJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { headers: { Accept: 'application/json' } })
-  if (!response.ok) throw new Error('Request failed: ' + response.status)
-  return response.json() as Promise<T>
-}
 
 // Renders one table section: columns come from the server definition, rows from its source URL.
 // params are sent as query string values (the search criteria of a search section).

@@ -15,7 +15,7 @@ export default defineConfig({
     strictPort: true,
     cors: true,
     hmr: { path: '/__vite_hmr' },
-    proxy: { '^/(api|Customers|Orders|OrderSearch)': { target: backend, changeOrigin: true } },
+    proxy: { '^/(api|Customers|Orders)': { target: backend, changeOrigin: true } },
   },
   build: {
     manifest: true,

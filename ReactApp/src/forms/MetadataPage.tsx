@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import type { PageConfiguration, PageSection } from './PageConfiguration'
+import { getJson } from '@/api/request'
 import { PageTable } from './PageTable'
 import { SearchSection } from './SearchSection'
 
@@ -12,11 +13,7 @@ function Section({ section }: { section: PageSection }) {
 export function MetadataPage({ configurationUrl }: { configurationUrl: string }) {
   const query = useQuery({
     queryKey: ['page', configurationUrl],
-    queryFn: async () => {
-      const response = await fetch(configurationUrl, { headers: { Accept: 'application/json' } })
-      if (!response.ok) throw new Error('Request failed: ' + response.status)
-      return response.json() as Promise<PageConfiguration>
-    },
+    queryFn: () => getJson<PageConfiguration>(configurationUrl),
   })
   if (query.isLoading) return <p role="status">Loading...</p>
   if (query.isError) return <p role="alert">{query.error.message}</p>

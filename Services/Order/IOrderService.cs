@@ -3,6 +3,5 @@ namespace ReactByCode.Services.Order;
 
 public interface IOrderService
 {
-    List<OrderRow> GetAll();
     List<OrderRow> Search(OrderSearchCriteria criteria);
 }

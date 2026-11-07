@@ -1,15 +1,7 @@
 using System.Linq.Expressions;
 namespace ReactByCode.Common.Forms;
 
-public sealed record CriteriaOption(string Value, string Label);
-
-public sealed record CriteriaField(string Key, string Label, string Type, List<CriteriaOption>? Options);
-
-public sealed class CriteriaMetadata
-{
-    public List<CriteriaField> Fields { get; init; } = [];
-}
-
+// Fluent definition of a search form, typed on the criteria class so fields are compile-checked.
 public sealed class CriteriaBuilder<TCriteria>
 {
     private readonly List<CriteriaField> fields = [];
@@ -20,6 +12,7 @@ public sealed class CriteriaBuilder<TCriteria>
     public CriteriaBuilder<TCriteria> Date(Expression<Func<TCriteria, object?>> field, string label)
         => Add(field, label, "date", null);
 
+    // A dropdown. The browser adds an empty "All" choice in front of the given options.
     public CriteriaBuilder<TCriteria> Select(Expression<Func<TCriteria, object?>> field, string label, params string[] options)
         => Add(field, label, "select", options.Select(o => new CriteriaOption(o, o)).ToList());
 

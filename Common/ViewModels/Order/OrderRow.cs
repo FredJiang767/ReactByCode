@@ -1,6 +1,5 @@
 namespace ReactByCode.Common.ViewModels.Order;
 
-// One row of the order table. Property names become the camelCase JSON keys.
 public sealed class OrderRow
 {
     public int OrderID { get; set; }

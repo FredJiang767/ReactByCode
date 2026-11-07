@@ -1,0 +1,6 @@
+// GET a JSON resource. Throws when the response is not successful.
+export async function getJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { headers: { Accept: 'application/json' } })
+  if (!response.ok) throw new Error('Request failed: ' + response.status)
+  return response.json() as Promise<T>
+}

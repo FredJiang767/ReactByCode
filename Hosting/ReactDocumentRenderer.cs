@@ -2,8 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 namespace ReactByCode.Hosting;
 
-public sealed record ReactDocument(string ConfigurationJson, string ScriptUrl, string[] Styles, string? ViteBasePath);
-
 // Builds the data the Razor shell needs: the page settings JSON and the URLs of the React entry script and styles.
 public sealed class ReactDocumentRenderer(IWebHostEnvironment environment, MigrationOptions options)
 {
