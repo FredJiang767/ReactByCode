@@ -12,8 +12,5 @@ public sealed class CustomerTable : ITable<CustomerRow>
             .Column(row => row.CustomerID, "ID")
             .Column(row => row.Name, "Name")
             .Column(row => row.Email, "Email")
-            .Column(row => row.Phone, "Phone")
-            .Column(row => row.State, "State")
-            .Column(row => row.Balance, "Balance", ColumnFormat.Currency)
             .Column(row => row.CreatedDate, "Created", ColumnFormat.Date);
 }

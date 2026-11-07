@@ -33,15 +33,5 @@ public sealed class TableBuilder<TRow>
         return new TableMetadata { Title = title, RowKey = rowKey, EmptyMessage = emptyMessage, Columns = columns };
     }
 
-    private static string Name(Expression<Func<TRow, object?>> field)
-    {
-        Expression body = field.Body is UnaryExpression { NodeType: ExpressionType.Convert } unary ? unary.Operand : field.Body;
-        if (body is not MemberExpression member) throw new InvalidOperationException("A column must select a property.");
-        return char.ToLowerInvariant(member.Member.Name[0]) + member.Member.Name[1..];
-    }
-}
-
-public static class Layout
-{
-    public static TableBuilder<TRow> Table<TRow>() => new();
+    private static string Name(Expression<Func<TRow, object?>> field) => FieldExpression.PropertyName(field);
 }

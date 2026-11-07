@@ -10,11 +10,9 @@ public sealed class CustomerController(ICustomerService service) : PageControlle
 {
     public const string PageUrl = "/Customers";
 
-    // The browser page: returns the React shell.
     [ReactDocument, HttpGet(PageUrl)]
     public Task<IActionResult> ListPage() => RenderPage(nameof(ListConfiguration));
 
-    // The page definition (sections, columns, data URLs).
     [HttpGet]
     public ActionResult<PageMetadata> ListConfiguration() => Resolve(CustomerPage.Configure());
 

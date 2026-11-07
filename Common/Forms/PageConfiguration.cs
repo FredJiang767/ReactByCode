@@ -1,6 +1,5 @@
 namespace ReactByCode.Common.Forms;
 
-// A page declared in code. Resolve turns it into the metadata the browser renders.
 public sealed class PageConfiguration
 {
     internal List<PageSectionDefinition> Definitions { get; } = [];
@@ -24,7 +23,6 @@ public sealed class PageConfiguration
     }
 }
 
-// The serialized page definition sent to the browser.
 public sealed class PageMetadata
 {
     public int SchemaVersion { get; set; } = 1;
@@ -35,11 +33,11 @@ public sealed class PageSectionMetadata
 {
     public string Key { get; set; } = "";
     public string Type { get; set; } = "table";
+    public CriteriaMetadata? Criteria { get; set; }
     public TableMetadata Table { get; set; } = new();
     public string Source { get; set; } = "";
 }
 
-// Entry point for declaring a page: Page.Configure(pc => pc.Section(...).LoadFrom(...)).
 public static class Page
 {
     public static PageConfiguration Configure(Func<PageConfigurationBuilder, PageConfigurationBuilder> define)

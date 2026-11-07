@@ -1,6 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
-import type { PageConfiguration } from './PageConfiguration'
+import type { PageConfiguration, PageSection } from './PageConfiguration'
 import { PageTable } from './PageTable'
+import { SearchSection } from './SearchSection'
+
+// Picks the component for a section by its declared type.
+function Section({ section }: { section: PageSection }) {
+  return section.type === 'search' ? <SearchSection section={section} /> : <PageTable section={section} />
+}
 
 // Loads the page definition from the server and renders each of its sections.
 export function MetadataPage({ configurationUrl }: { configurationUrl: string }) {
@@ -16,7 +22,7 @@ export function MetadataPage({ configurationUrl }: { configurationUrl: string })
   if (query.isError) return <p role="alert">{query.error.message}</p>
   return (
     <main>
-      {query.data!.sections.map((section) => <PageTable key={section.key} section={section} />)}
+      {query.data!.sections.map((section) => <Section key={section.key} section={section} />)}
     </main>
   )
 }

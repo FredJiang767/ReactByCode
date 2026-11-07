@@ -10,3 +10,10 @@ tbody tr:hover { background: #f7f9fc; }
 .num { text-align: right; }.nav { display: flex; gap: 16px; padding: 12px 24px; background: #1f2430; }
 .nav a { color: #c9cfdb; text-decoration: none; }
 .nav a.active { color: #fff; font-weight: 600; }
+.criteria { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
+.criteria label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
+.criteria input, .criteria select { padding: 6px 8px; border: 1px solid #c9cfdb; border-radius: 4px; min-width: 160px; font: inherit; }
+.criteria-actions { display: flex; gap: 8px; }
+.criteria button { padding: 7px 16px; border: 0; border-radius: 4px; background: #2f5bea; color: #fff; font: inherit; cursor: pointer; }
+.criteria button.secondary { background: #e4e7ee; color: #1f2430; }
+main > .card + .card { margin-top: 16px; }

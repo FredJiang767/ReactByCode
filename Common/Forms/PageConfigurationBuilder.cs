@@ -1,8 +1,7 @@
 using System.Linq.Expressions;
 namespace ReactByCode.Common.Forms;
 
-// One section of a page: a table plus the controller action that supplies its rows.
-internal sealed class PageSectionDefinition(string key, TableMetadata table)
+internal sealed class PageSectionDefinition(string key, TableMetadata table, CriteriaMetadata? criteria)
 {
     public string Key { get; } = key;
     public string? Controller { get; set; }
@@ -15,7 +14,14 @@ internal sealed class PageSectionDefinition(string key, TableMetadata table)
 
         string source = links.GetPathByAction(context, Action, Controller)
             ?? throw new InvalidOperationException("The Section data route is missing: " + Key);
-        return new PageSectionMetadata { Key = Key, Table = table, Source = source };
+        return new PageSectionMetadata
+        {
+            Key = Key,
+            Type = criteria == null ? "table" : "search",
+            Criteria = criteria,
+            Table = table,
+            Source = source
+        };
     }
 }
 
@@ -26,11 +32,19 @@ public sealed class PageConfigurationBuilder
     // Adds a table section. Follow it with LoadFrom to say where the rows come from.
     public PageConfigurationBuilder Section<TRow>(string key, TableBuilder<TRow> table)
     {
-        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build()));
+        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), null));
+        return this;
+    }
+
+    // Adds a search section: a criteria form above a result table. The endpoint receives the criteria as query string values.
+    public PageConfigurationBuilder SearchSection<TCriteria, TRow>(string key, CriteriaBuilder<TCriteria> criteria, TableBuilder<TRow> table)
+    {
+        configuration.Definitions.Add(new PageSectionDefinition(key, table.Build(), criteria.Build()));
         return this;
     }
 
     // Binds the last section to a controller action, e.g. LoadFrom<CustomerController>(c => c.List()).
+    // Arguments of the call are ignored; only the action name is used.
     public PageConfigurationBuilder LoadFrom<TController>(Expression<Func<TController, object?>> action)
     {
         if (configuration.Definitions.Count == 0)

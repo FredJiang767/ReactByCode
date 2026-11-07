@@ -12,9 +12,28 @@ export interface TableMetadata {
   columns: TableColumn[]
 }
 
+export interface CriteriaOption {
+  value: string
+  label: string
+}
+
+export interface CriteriaField {
+  key: string
+  label: string
+  type: 'text' | 'date' | 'select'
+  options: CriteriaOption[] | null
+}
+
+export interface CriteriaMetadata {
+  fields: CriteriaField[]
+}
+
+export type CriteriaValues = Record<string, string>
+
 export interface PageSection {
   key: string
-  type: string
+  type: 'table' | 'search'
+  criteria: CriteriaMetadata | null
   table: TableMetadata
   source: string
 }

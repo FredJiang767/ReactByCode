@@ -16,4 +16,12 @@ public sealed class OrderService : IOrderService
             Total = 19.99m + i * 12.5m,
             OrderDate = new DateTime(2026, 3, 1, 9, 30, 0).AddDays(i * 3).AddHours(i)
         }).ToList();
+
+    // Empty criteria values are ignored. The end date includes the whole day.
+    public List<OrderRow> Search(OrderSearchCriteria criteria)
+        => GetAll().Where(row =>
+            (string.IsNullOrWhiteSpace(criteria.CustomerName) || row.CustomerName!.Contains(criteria.CustomerName.Trim(), StringComparison.OrdinalIgnoreCase))
+            && (string.IsNullOrWhiteSpace(criteria.Status) || row.Status == criteria.Status)
+            && (criteria.OrderDateFrom == null || row.OrderDate >= criteria.OrderDateFrom.Value.Date)
+            && (criteria.OrderDateTo == null || row.OrderDate < criteria.OrderDateTo.Value.Date.AddDays(1))).ToList();
 }
